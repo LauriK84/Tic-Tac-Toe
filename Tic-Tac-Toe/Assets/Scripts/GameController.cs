@@ -9,10 +9,16 @@ public class GameController : MonoBehaviour
     public GameObject[] TurnIcons; // näyttää kenen vuoro on
     public Sprite[] playerIcons; //  0 = X ja 1 = O merkit
     public Button[] ticTacToe; // pelattavat ruudut
+    public Text winnerText;  // voittajateksti
+    public GameObject[] lines;  // sisältää pelin voittolinjat
+    public Text xScoreText;
+    public Text oScoreText;
 
     public int _whoTurn; // 0 = X ja 1 = O, nolla tarkoittaa X ja ykkönen tarkoittaa O
     public int _countTurn; // laskee vuorot
     public int[] _marked; // merkityt ruudut
+    public int _xScore;
+    public int _oScore;
 
 
 
@@ -89,7 +95,7 @@ public class GameController : MonoBehaviour
         int _row5 = _marked[1] + _marked[4] + _marked[7];
         int _row6 = _marked[2] + _marked[5] + _marked[8];
         int _row7 = _marked[0] + _marked[4] + _marked[8];
-        int _row8 = _marked[0] + _marked[4] + _marked[6];
+        int _row8 = _marked[2] + _marked[4] + _marked[6];
         var _solution = new int[] { _row1, _row2, _row3, _row4, _row5, _row6, _row7, _row8 };
 
         for(int i=0; i<_solution.Length; i++)
@@ -97,10 +103,50 @@ public class GameController : MonoBehaviour
             //jos i on jokaisella rivillä 1 voittaa x 3*1=3, jos jokaisella rivillä on 2 voittaa o 3*2=6 
             if(_solution[i] == 3* (_whoTurn + 1))
             {
-                Debug.Log("Player "+ _whoTurn +" Won!");
+                LineDisplay(i);
                 return;
             }
         }
     }
 
+    void LineDisplay(int index)
+    {
+        winnerText.gameObject.SetActive(true);
+
+        if(_whoTurn == 0)
+        {
+            _xScore++;
+            xScoreText.text = _xScore.ToString();
+            winnerText.text = "Winner is X player!";
+        }
+        else if (_whoTurn == 1)
+        {
+            _oScore++;
+            oScoreText.text = _oScore.ToString();
+            winnerText.text = "Winner is O player!";
+        }
+
+        lines[index].SetActive(true);
+        for(int i = 0; i < ticTacToe.Length; i++)
+        {
+            ticTacToe[i].interactable = false;
+        }
+    }
+    public void Rematch()
+    {
+        GameSetup();
+
+        for(int i =0;i< lines.Length; i++)
+        {
+            lines[i].SetActive(false);
+        }
+    }
+    public void Restart()
+    {
+        Rematch();
+        _xScore = 0;
+        _oScore = 0;
+        xScoreText.text = "0";
+        oScoreText.text = "0";
+    }
 }
